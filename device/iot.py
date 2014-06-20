@@ -16,14 +16,14 @@ def iio_enable():
 def read_adc0():
         fp1 = open("/sys/devices/ocp.3/helper.15/AIN0","r")
         value = fp1.read()
-        value = value.rstrip()
+        value = int(value.rstrip())
         return value
         fp1.close()
 
 def read_adc0_raw():
         fp2 =  open("/sys/devices/ocp.3/44e0d000.tscadc/tiadc/iio:device0/in_voltage0_raw","r")
         value = fp2.read()
-        value = value.rstrip()
+        value = int(value.rstrip())
 	return value
         fp2.close()
 
@@ -31,7 +31,7 @@ adc_values = collections.deque(maxlen=10)
 iio_enable()
 while True:
         for cycle in xrange(10):
-		adc_values.append(int(read_adc0()))
+		adc_values.append(read_adc0())
 		time.sleep(0.05)
 	print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
 
