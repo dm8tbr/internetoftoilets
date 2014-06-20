@@ -1,5 +1,6 @@
 import sys
 import time
+import collections
 
 print "IoT ready!"
 print "Press CTRL + C to exit"
@@ -26,8 +27,9 @@ def read_adc0_raw():
 	return value
         fp2.close()
 
+adc_values = collections.deque(maxlen=10)
 iio_enable()
 while True:
-        adc_value =  read_adc0()
-        adc_raw_value = read_adc0_raw()
-        print "ADC0 values: %s %s " % (adc_value, adc_raw_value, ) 
+        adc_values.append(int(read_adc0()))
+        print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
+
