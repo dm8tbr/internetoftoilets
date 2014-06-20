@@ -30,6 +30,8 @@ def read_adc0_raw():
 adc_values = collections.deque(maxlen=10)
 iio_enable()
 while True:
-        adc_values.append(int(read_adc0()))
-        print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
+        for cycle in xrange(10):
+		adc_values.append(int(read_adc0()))
+		time.sleep(0.05)
+	print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
 
