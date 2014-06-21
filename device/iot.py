@@ -39,6 +39,10 @@ def get_adc0_average():
 	print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
 	return (sum(adc_values)/10)
 
+def get_volume(adc_value):
+	volume, tmp = min(calibration.items(), key=lambda (_, v): abs(v - adc_value))
+	return volume
+
 def handle_flush(value):
 	current_level = value
 	new_level = value-1
