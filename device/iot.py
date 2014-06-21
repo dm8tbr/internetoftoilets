@@ -12,6 +12,12 @@ active_level = 535
 calibration = { 0.5 : 178, 1 : 229, 1.5 : 266.5, 2 : 303, 2.5 : 335, 3 : 361.5, 3.5 : 390.5, 4 : 415.5, 4.5 : 439, 5 : 464.5, 5.5 : 488, 6 : 514, 6.5 : 534.5, 7 : 557 }
 twitter_user_creds = os.path.expanduser("~/.twitter_oauth")
 twitter_consumer_creds = os.path.expanduser("~/.twitter_consumer")
+mqtt_creds = os.path.expanduser("~/.mqtt_auth")
+mqtt_name = "iot"
+mqtt_server = "mqtt.ruecker.fi"
+mqtt_port = 1883
+mqtt_keepalive = 60
+
 
 def iio_enable():
         try:
@@ -77,7 +83,9 @@ def handle_flush(value):
 					current_level = new_level
 					print "waiting for full or flush"
 	print "We're really done! Total flushed: %i" % (sum(flushes), )
-	twitter.statuses.update(status='Latest flush: %i litres.' % (sum(flushes), ))
+	twitter.statuses.update(status='Latest flush: %i litres. #IoT' % (sum(flushes), ))
+	mqtt_status = mqtt.publish("iotoilet/flush/volume", str(sum(flushes)), 1)
+	print "MQTT returned status: %s" % (mqtt_status, )
 
 #Enter the dragon
 iio_enable()
@@ -88,7 +96,14 @@ oauth_token, oauth_secret = read_token_file(twitter_user_creds)
 consumer_key, consumer_secret = read_token_file(twitter_consumer_creds)
 twitter = Twitter(auth=OAuth(oauth_token, oauth_secret, consumer_key, consumer_secret))
 
+#Initialize MQTT
+mqtt_user, mqtt_password = read_token_file(mqtt_creds)
+mqtt = mosquitto.Mosquitto(mqtt_name)
+mqtt.username_pw_set(mqtt_user, mqtt_password)
+mqtt.connect(mqtt_server, mqtt_port, mqtt_keepalive)
+
 while True:
+	mqtt.loop()
 	adc0_average = get_adc0_average()
 	adc_values_longterm.append(adc0_average)
 	if adc0_average < active_level:
