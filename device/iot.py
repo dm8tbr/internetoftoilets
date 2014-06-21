@@ -3,6 +3,7 @@ import time
 import os
 import collections
 from twitter import *
+import mosquitto
 
 print "IoT ready!"
 print "Press CTRL + C to exit"
