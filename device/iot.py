@@ -1,6 +1,7 @@
 import sys
 import time
 import collections
+import twitter
 
 print "IoT ready!"
 print "Press CTRL + C to exit"
@@ -56,7 +57,7 @@ def handle_flush(value):
 				current_level = new_level
 				new_level = get_adc0_average()
 				print "waiting for flush to stop"
-			flushes.append(initial_level - current_level)
+			flushes.append(get_volume(initial_level) - get_volume(current_level))
 			state = "filling"
 			print "flush stopped after %i" % (initial_level - current_level, )
 		elif state == "filling":
