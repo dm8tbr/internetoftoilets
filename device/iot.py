@@ -42,15 +42,18 @@ def handle_flush(value):
 	current_level = value
 	new_level = value-1
 	state = "flush"
+	flushes = collections.deque()
 	
 	while state != "done":
 		if state == "flush":
+			initial_level = current_level
 			while current_level > new_level:
 				current_level = new_level
 				new_level = get_adc0_average()
 				print "waiting for flush to stop"
+			flushes.append(initial_level - current_level)
 			state = "filling"
-			print "flush stopped at %i" % (current_level, )
+			print "flush stopped after %i" % (initial_level - current_level, )
 		elif state == "filling":
 			while current_level <= new_level and state == "filling":
 				new_level = get_adc0_average()
@@ -63,11 +66,17 @@ def handle_flush(value):
 				else:
 					current_level = new_level
 					print "waiting for full or flush"
-	print "We're really done!"
+	print "We're really done! Total flushed: %i" % (sum(flushes), )
 
 iio_enable()
+adc_values_longterm = collections.deque(maxlen=20)
 while True:
 	adc0_average = get_adc0_average()
+	adc_values_longterm.append(adc0_average)
 	if adc0_average < active_level:
-		handle_flush(adc0_average)
+		adc_max = 0
+		for elem in adc_values_longterm:
+			if elem > adc_max:
+				adc_max = elem
+		handle_flush(adc_max)
 
