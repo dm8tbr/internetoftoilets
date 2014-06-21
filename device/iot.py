@@ -27,11 +27,16 @@ def read_adc0_raw():
 	return value
         fp2.close()
 
-adc_values = collections.deque(maxlen=10)
-iio_enable()
-while True:
-        for cycle in xrange(10):
+def get_adc0_average():
+	adc_values = collections.deque(maxlen=10)
+	read_adc0() # TI ADC driver sucks, discard first value
+	for cycle in xrange(10):
 		adc_values.append(read_adc0())
 		time.sleep(0.05)
 	print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
+	return (sum(adc_values)/10)
+
+iio_enable()
+while True:
+	get_adc0_average()
 
