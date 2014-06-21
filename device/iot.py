@@ -6,6 +6,7 @@ print "IoT ready!"
 print "Press CTRL + C to exit"
 
 active_level = 535
+calibration = { 0.5 : 178, 1 : 229, 1.5 : 266.5, 2 : 303, 2.5 : 335, 3 : 361.5, 3.5 : 390.5, 4 : 415.5, 4.5 : 439, 5 : 464.5, 5.5 : 488, 6 : 514, 6.5 : 534.5, 7 : 557 }
 
 def iio_enable():
         try:
