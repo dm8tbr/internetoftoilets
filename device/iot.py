@@ -1,13 +1,16 @@
 import sys
 import time
+import os
 import collections
-import twitter
+from twitter import *
 
 print "IoT ready!"
 print "Press CTRL + C to exit"
 
 active_level = 535
 calibration = { 0.5 : 178, 1 : 229, 1.5 : 266.5, 2 : 303, 2.5 : 335, 3 : 361.5, 3.5 : 390.5, 4 : 415.5, 4.5 : 439, 5 : 464.5, 5.5 : 488, 6 : 514, 6.5 : 534.5, 7 : 557 }
+twitter_user_creds = os.path.expanduser("~/.twitter_oauth")
+twitter_consumer_creds = os.path.expanduser("~/.twitter_consumer")
 
 def iio_enable():
         try:
@@ -73,9 +76,16 @@ def handle_flush(value):
 					current_level = new_level
 					print "waiting for full or flush"
 	print "We're really done! Total flushed: %i" % (sum(flushes), )
+	twitter.statuses.update(status='Latest flush: %i litres.' % (sum(flushes), ))
 
 iio_enable()
 adc_values_longterm = collections.deque(maxlen=20)
+
+#Initialize Twitter
+oauth_token, oauth_secret = read_token_file(twitter_user_creds)
+consumer_key, consumer_secret = read_token_file(twitter_consumer_creds)
+twitter = Twitter(auth=OAuth(oauth_token, oauth_secret, consumer_key, consumer_secret))
+
 while True:
 	adc0_average = get_adc0_average()
 	adc_values_longterm.append(adc0_average)
