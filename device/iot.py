@@ -41,7 +41,7 @@ def get_adc0_average():
 	for cycle in xrange(10):
 		adc_values.append(read_adc0())
 		time.sleep(0.05)
-	print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
+	#print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
 	return (sum(adc_values)/10)
 
 def get_volume(adc_value):
