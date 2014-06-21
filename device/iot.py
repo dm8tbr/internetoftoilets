@@ -5,7 +5,7 @@ import collections
 print "IoT ready!"
 print "Press CTRL + C to exit"
 
-active_level = 545
+active_level = 535
 
 def iio_enable():
         try:
