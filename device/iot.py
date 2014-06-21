@@ -79,6 +79,7 @@ def handle_flush(value):
 	print "We're really done! Total flushed: %i" % (sum(flushes), )
 	twitter.statuses.update(status='Latest flush: %i litres.' % (sum(flushes), ))
 
+#Enter the dragon
 iio_enable()
 adc_values_longterm = collections.deque(maxlen=20)
 
