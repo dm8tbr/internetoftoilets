@@ -83,7 +83,12 @@ def handle_flush(value):
 					current_level = new_level
 					print "waiting for full or flush"
 	print "We're really done! Total flushed: %i" % (sum(flushes), )
-	twitter.statuses.update(status='Latest flush: %i litres. #IoT' % (sum(flushes), ))
+	try:
+		twitter.statuses.update(status='Latest flush: %i litres. #IoT' % (sum(flushes), ))
+	except:
+		print "Something went wrong while sending the tweet: ", sys.exc_info()[1]
+	else:
+		print "Tweet sent: Latest flush: %i litres. #IoT" % (sum(flushes), ))
 	mqtt_status = mqtt.publish("iotoilet/flush/volume", str(sum(flushes)), 1)
 	print "MQTT returned status: %s" % (mqtt_status, )
 
