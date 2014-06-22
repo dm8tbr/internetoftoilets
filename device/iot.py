@@ -88,7 +88,7 @@ def handle_flush(value):
 	except:
 		print "Something went wrong while sending the tweet: ", sys.exc_info()[1]
 	else:
-		print "Tweet sent: Latest flush: %i litres. #IoT" % (sum(flushes), ))
+		print "Tweet sent: Latest flush: %i litres. #IoT" % (sum(flushes), )
 	try:
 		mqtt.publish("iotoilet/flush/volume", str(sum(flushes)), 1)
 	except:
