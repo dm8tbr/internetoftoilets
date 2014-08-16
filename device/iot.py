@@ -76,6 +76,7 @@ def handle_flush(value):
 			state = "filling"
 			print "flush stopped after %i" % (initial_level - current_level, )
 		elif state == "filling":
+			print "waiting for full or flush"
 			while current_level <= new_level and state == "filling":
 				new_level = get_adc0_average()
 				if current_level >= active_level:
@@ -86,7 +87,6 @@ def handle_flush(value):
 					state = "flush"
 				else:
 					current_level = new_level
-					print "waiting for full or flush"
 	print "We're really done! Total flushed: %s" % (str(sum(flushes)), )
 	try:
 		twitter.statuses.update(status='Latest flush: %s litres. #IoT' % (str(sum(flushes)), ))
