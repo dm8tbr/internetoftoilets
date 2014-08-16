@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import sys
 import time
 import os
@@ -14,7 +15,7 @@ twitter_user_creds = os.path.expanduser("~/.twitter_oauth")
 twitter_consumer_creds = os.path.expanduser("~/.twitter_consumer")
 mqtt_creds = os.path.expanduser("~/.mqtt_auth")
 mqtt_name = "iot"
-mqtt_server = "mqtt.ruecker.fi"
+mqtt_server = "devaamo.fi"
 mqtt_port = 1883
 mqtt_keepalive = 60
 
@@ -45,7 +46,11 @@ def get_adc0_average():
 	adc_values = collections.deque(maxlen=10)
 	read_adc0() # TI ADC driver sucks, discard first value
 	for cycle in xrange(10):
-		adc_values.append(read_adc0())
+		try:
+                    adc_values.append(read_adc0())
+		except:
+		    print "error reading ADC"
+		    cycle -= 1
 		time.sleep(0.05)
 	#print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
 	return (sum(adc_values)/10)
@@ -63,10 +68,10 @@ def handle_flush(value):
 	while state != "done":
 		if state == "flush":
 			initial_level = current_level
+			print "waiting for flush to stop"
 			while current_level > new_level:
 				current_level = new_level
 				new_level = get_adc0_average()
-				print "waiting for flush to stop"
 			flushes.append(get_volume(initial_level) - get_volume(current_level))
 			state = "filling"
 			print "flush stopped after %i" % (initial_level - current_level, )
@@ -90,11 +95,11 @@ def handle_flush(value):
 	else:
 		print "Tweet sent: Latest flush: %s litres. #IoT" % (str(sum(flushes)), )
 	try:
-		mqtt.publish("iotoilet/flush/volume", str(sum(flushes)), 1)
+		mqtt.publish("sailfish/iotoilets/flush_volume", str(sum(flushes)), 1)
 	except:
 		print "Something went wrong while sending MQTT message: ", sys.exc_info()[1]
 	else:
-		print "MQTT message: %s; sent to: iotoilet/flush/volume" % (str(sum(flushes)), )
+		print "MQTT message: %s; sent to: sailfish/iotoilets/flush_volume" % (str(sum(flushes)), )
 
 #Enter the dragon
 iio_enable()
