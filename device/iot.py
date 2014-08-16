@@ -45,12 +45,13 @@ def read_adc0_raw():
 def get_adc0_average():
 	adc_values = collections.deque(maxlen=10)
 	read_adc0() # TI ADC driver sucks, discard first value
-	for cycle in xrange(10):
+        cycle_range = range(10)
+	for cycle in cycle_range:
 		try:
                     adc_values.append(read_adc0())
 		except:
 		    print "error reading ADC"
-		    cycle -= 1
+		    cycle_range.append(len(cycle_range))
 		time.sleep(0.05)
 	#print "Average of last 10 measurements: %i" % (sum(adc_values)/10)
 	return (sum(adc_values)/10)
