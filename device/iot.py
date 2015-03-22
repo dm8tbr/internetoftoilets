@@ -32,8 +32,8 @@ def read_adc0():
         fp1 = open("/sys/devices/ocp.3/helper.15/AIN0","r")
         value = fp1.read()
         value = int(value.rstrip())
-        return value
         fp1.close()
+        return value
 
 def read_adc0_raw():
         fp2 =  open("/sys/devices/ocp.3/44e0d000.tscadc/tiadc/iio:device0/in_voltage0_raw","r")
@@ -44,12 +44,15 @@ def read_adc0_raw():
 
 def get_adc0_average():
 	adc_values = collections.deque(maxlen=10)
-	read_adc0() # TI ADC driver sucks, discard first value
+	try:
+            read_adc0() # TI ADC driver sucks, discard first value
+        except IOError:
+            print "error reading ADC"
         cycle_range = range(10)
 	for cycle in cycle_range:
 		try:
                     adc_values.append(read_adc0())
-		except:
+		except IOError:
 		    print "error reading ADC"
 		    cycle_range.append(len(cycle_range))
 		time.sleep(0.05)
